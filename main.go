@@ -1,7 +1,10 @@
 package main
 
-import "fmt"
+import (
+	"github.com/Andreasmalleus/go-rest-api/routes"
+)
 
 func main() {
-	fmt.Println("Runing main.go")
+	router := routes.SetRouter()
+	router.Run(":3000")
 }
