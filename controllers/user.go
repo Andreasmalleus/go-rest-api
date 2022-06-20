@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"time"
+
 	"github.com/Andreasmalleus/go-rest-api/config"
 	"github.com/Andreasmalleus/go-rest-api/models"
 	"github.com/gin-gonic/gin"
@@ -44,8 +46,29 @@ func GetAllUsers(c *gin.Context) {
 }
 
 func CreateUser(c *gin.Context) {
+	user := models.User{}
+	if err := c.ShouldBind(&user); err != nil {
+		c.JSON(400, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+	if user.Name == "" || user.Email == "" {
+		c.JSON(400, gin.H{
+			"error": "Name and Email are required",
+		})
+		return
+	}
+	currentTime := time.Now().Format(time.RFC3339)
+	_, err := config.Database.Exec(`INSERT INTO "user" (name, email, created_at, updated_at) VALUES ($1, $2, $3, $4)`, user.Name, user.Email, currentTime, currentTime)
+	if err != nil {
+		c.JSON(400, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
 	c.JSON(200, gin.H{
-		"user": "POST",
+		"user": user,
 	})
 }
 
