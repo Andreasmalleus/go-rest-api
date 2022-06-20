@@ -9,14 +9,39 @@ import (
 )
 
 func GetPost(c *gin.Context) {
+	id := c.Param("id")
+	post := models.Post{}
+	err := config.Database.QueryRow(`SELECT * FROM post WHERE id = $1`, id).Scan(&post.ID, &post.Title, &post.Content, &post.CreatedAt, &post.UpdatedAt, &post.UserId)
+	if err != nil {
+		c.JSON(400, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
 	c.JSON(200, gin.H{
-		"post": "GET",
+		"post": &post,
 	})
 }
 
 func GetAllPosts(c *gin.Context) {
+	posts := []models.Post{}
+	rows, err := config.Database.Query(`SELECT * FROM post`)
+	if err != nil {
+		c.JSON(400, gin.H{
+			"error": err.Error(),
+		})
+	}
+	defer rows.Close()
+	for rows.Next() {
+		post := models.Post{}
+		err := rows.Scan(&post.ID, &post.Title, &post.Content, &post.CreatedAt, &post.UpdatedAt, &post.UserId)
+		if err != nil {
+			return
+		}
+		posts = append(posts, post)
+	}
 	c.JSON(200, gin.H{
-		"posts": "GET",
+		"posts": posts,
 	})
 }
 
