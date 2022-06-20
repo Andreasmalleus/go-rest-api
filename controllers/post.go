@@ -73,7 +73,15 @@ func UpdatePost(c *gin.Context) {
 }
 
 func DeletePost(c *gin.Context) {
+	id := c.Param("id")
+	_, err := config.Database.Exec(`DELETE FROM post WHERE id = $1`, id)
+	if err != nil {
+		c.JSON(400, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
 	c.JSON(200, gin.H{
-		"post": "DELETE",
+		"status": "Post deleted successfully",
 	})
 }
