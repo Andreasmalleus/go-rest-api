@@ -115,7 +115,28 @@ func UpdateUser(c *gin.Context) {
 }
 
 func DeleteUser(c *gin.Context) {
+	id := c.Param("id")
+	res, err := config.Database.Exec(`DELETE FROM "user" WHERE id = $1`, id)
+	if err != nil {
+		c.JSON(400, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		c.JSON(400, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+	if rowsAffected == 0 {
+		c.JSON(400, gin.H{
+			"error": "No user found with that id",
+		})
+		return
+	}
 	c.JSON(200, gin.H{
-		"user": "DELETE",
+		"status": "user successfuly deleted",
 	})
 }
