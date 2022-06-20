@@ -72,9 +72,45 @@ func CreateUser(c *gin.Context) {
 	})
 }
 
+type updateRequestBody struct {
+	Email string `json:"email"`
+}
+
 func UpdateUser(c *gin.Context) {
+	id := c.Param("id")
+	body := updateRequestBody{}
+	if err := c.ShouldBind(&body); err != nil {
+		c.JSON(400, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+	user := models.User{}
+	err := config.Database.QueryRow(`SELECT * FROM "user" WHERE id = $1`, id).Scan(&user.ID, &user.Name, &user.Email, &user.CreatedAt, &user.UpdatedAt)
+	if err != nil {
+		c.JSON(400, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	currentTime := time.Now().Format(time.RFC3339)
+
+	if body.Email != user.Email && body.Email != "" {
+		_, err := config.Database.Exec(`UPDATE "user" SET email = $1, updated_at = $2 WHERE id = $3`, body.Email, currentTime, user.ID)
+		if err != nil {
+			c.JSON(400, gin.H{
+				"error": err.Error(),
+			})
+		}
+	} else {
+		c.JSON(400, gin.H{
+			"error": "Something went wrong...",
+		})
+		return
+	}
 	c.JSON(200, gin.H{
-		"user": "PUT",
+		"error": "Update successful...",
 	})
 }
 
