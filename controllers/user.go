@@ -22,8 +22,24 @@ func GetUser(c *gin.Context) {
 }
 
 func GetAllUsers(c *gin.Context) {
+	users := []models.User{}
+	rows, err := config.Database.Query(`SELECT * FROM "user"`)
+	if err != nil {
+		c.JSON(400, gin.H{
+			"error": err.Error(),
+		})
+	}
+	defer rows.Close()
+	for rows.Next() {
+		user := models.User{}
+		err := rows.Scan(&user.ID, &user.Name, &user.Email, &user.CreatedAt, &user.UpdatedAt)
+		if err != nil {
+			return
+		}
+		users = append(users, user)
+	}
 	c.JSON(200, gin.H{
-		"users": "GET",
+		"users": users,
 	})
 }
 
