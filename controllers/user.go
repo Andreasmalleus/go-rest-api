@@ -96,21 +96,26 @@ func UpdateUser(c *gin.Context) {
 
 	currentTime := time.Now().Format(time.RFC3339)
 
-	if body.Email != user.Email && body.Email != "" {
-		_, err := config.Database.Exec(`UPDATE "user" SET email = $1, updated_at = $2 WHERE id = $3`, body.Email, currentTime, user.ID)
-		if err != nil {
-			c.JSON(400, gin.H{
-				"error": err.Error(),
-			})
-		}
-	} else {
+	if body.Email == "" {
 		c.JSON(400, gin.H{
-			"error": "Something went wrong...",
+			"error": "Email is required",
 		})
 		return
 	}
+	if body.Email == "" {
+		c.JSON(400, gin.H{
+			"error": "Email is required",
+		})
+		return
+	}
+	_, exErr := config.Database.Exec(`UPDATE "user" SET email = $1, updated_at = $2 WHERE id = $3`, body.Email, currentTime, user.ID)
+	if exErr != nil {
+		c.JSON(400, gin.H{
+			"error": exErr.Error(),
+		})
+	}
 	c.JSON(200, gin.H{
-		"error": "Update successful...",
+		"status": "User update successful...",
 	})
 }
 
