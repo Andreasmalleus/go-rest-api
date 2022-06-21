@@ -66,9 +66,36 @@ func CreatePost(c *gin.Context) {
 	})
 }
 
+type updatePostRequestBody struct {
+	Title   string `json:"title"`
+	Content string `json:"content"`
+}
+
 func UpdatePost(c *gin.Context) {
+	id := c.Param("id")
+	body := updatePostRequestBody{}
+	if err := c.ShouldBind(&body); err != nil {
+		c.JSON(400, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+	currentTime := time.Now().Format(time.RFC3339)
+	if body.Title == "" && body.Content == "" {
+		c.JSON(400, gin.H{
+			"error": "No data to update",
+		})
+		return
+	}
+	_, err := config.Database.Exec(`UPDATE post SET title = $1, content = $2, updated_at = $3 WHERE id = $4`, &body.Title, &body.Content, currentTime, id)
+	if err != nil {
+		c.JSON(400, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
 	c.JSON(200, gin.H{
-		"post": "PUT",
+		"status": "Update successful...",
 	})
 }
 
