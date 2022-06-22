@@ -7,3 +7,7 @@ type User struct {
 	CreatedAt string `json:"created_at"`
 	UpdatedAt string `json:"updated_at"`
 }
+
+type UpdateUser struct {
+	Email string `json:"email"`
+}

@@ -8,3 +8,14 @@ type Post struct {
 	UpdatedAt string `json:"updated_at"`
 	UserId    int64  `json:"user_id"`
 }
+
+type UpdatePost struct {
+	Title   string `json:"title"`
+	Content string `json:"content"`
+}
+
+type CreatePost struct {
+	Title   string `json:"title"`
+	Content string `json:"content"`
+	UserId  int64  `json:"user_id"`
+}
