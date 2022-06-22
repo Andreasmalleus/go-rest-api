@@ -10,6 +10,16 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// GetPost godoc
+// @Summary      Show a post
+// @Description  get post by id
+// @Tags         post
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "Post ID"
+// @Success      200  {object}  models.Post
+// @Failure      400  {object}  httputil.HttpError
+// @Router       /post/{id} [get]
 func GetPost(c *gin.Context) {
 	id := c.Param("id")
 	post := models.Post{}
@@ -21,6 +31,15 @@ func GetPost(c *gin.Context) {
 	c.JSON(http.StatusOK, post)
 }
 
+// GetAllPosts godoc
+// @Summary      List posts
+// @Description  get posts
+// @Tags         post
+// @Accept       json
+// @Produce      json
+// @Success      200  {array}  models.Post
+// @Failure      400  {object}  httputil.HttpError
+// @Router       /posts [get]
 func GetAllPosts(c *gin.Context) {
 	posts := []models.Post{}
 	rows, err := config.Database.Query(`SELECT * FROM post`)
@@ -39,6 +58,16 @@ func GetAllPosts(c *gin.Context) {
 	c.JSON(http.StatusOK, posts)
 }
 
+// CreatePost godoc
+// @Summary      Create a post
+// @Description  create post with json
+// @Tags         post
+// @Accept       json
+// @Produce      json
+// @Param        post  body     models.CreatePost  true  "Create post"
+// @Success      200  {object}  models.Post
+// @Failure      400  {object}  httputil.HttpError
+// @Router       /post [post]
 func CreatePost(c *gin.Context) {
 	post := models.CreatePost{}
 	if err := c.ShouldBind(&post); err != nil {
@@ -54,6 +83,17 @@ func CreatePost(c *gin.Context) {
 	c.JSON(http.StatusOK, post)
 }
 
+// UpdatePost godoc
+// @Summary      Update a post
+// @Description  update post with json
+// @Tags         post
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "Post ID"
+// @Param        post  body     models.UpdatePost  true  "Update post"
+// @Success      200  {string}  models.Post
+// @Failure      400  {object}  httputil.HttpError
+// @Router       /post/{id} [put]
 func UpdatePost(c *gin.Context) {
 	id := c.Param("id")
 	body := models.UpdatePost{}
@@ -74,6 +114,16 @@ func UpdatePost(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{})
 }
 
+// DeletePost godoc
+// @Summary      Delete a post
+// @Description  delete post with id
+// @Tags         post
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "Post ID"
+// @Success      200  {string}  models.Post
+// @Failure      400  {object}  httputil.HttpError
+// @Router       /post/{id} [delete]
 func DeletePost(c *gin.Context) {
 	id := c.Param("id")
 	_, err := config.Database.Exec(`DELETE FROM post WHERE id = $1`, id)

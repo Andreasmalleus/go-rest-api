@@ -2,7 +2,10 @@ package routes
 
 import (
 	"github.com/Andreasmalleus/go-rest-api/controllers"
+	_ "github.com/Andreasmalleus/go-rest-api/docs"
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func SetRouter() *gin.Engine {
@@ -20,6 +23,8 @@ func SetRouter() *gin.Engine {
 		v1.POST("/post", controllers.CreatePost)
 		v1.PUT("/post/:id", controllers.UpdatePost)
 		v1.DELETE("/post/:id", controllers.DeletePost)
+
+		v1.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	}
 	return router
 }

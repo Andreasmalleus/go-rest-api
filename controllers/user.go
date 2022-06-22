@@ -10,6 +10,16 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// GetUser godoc
+// @Summary      Show a user
+// @Description  get user by id
+// @Tags         user
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "User ID"
+// @Success      200  {object}  models.User
+// @Failure      400  {object}  httputil.HttpError
+// @Router       /user/{id} [get]
 func GetUser(c *gin.Context) {
 	id := c.Param("id")
 	user := models.User{}
@@ -21,6 +31,15 @@ func GetUser(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
+// GetAllUsers godoc
+// @Summary      List users
+// @Description  get users
+// @Tags         user
+// @Accept       json
+// @Produce      json
+// @Success      200  {array}  models.User
+// @Failure      404  {object} httputil.HttpError
+// @Router       /users [get]
 func GetAllUsers(c *gin.Context) {
 	users := []models.User{}
 	rows, err := config.Database.Query(`SELECT * FROM "user"`)
@@ -39,6 +58,16 @@ func GetAllUsers(c *gin.Context) {
 	c.JSON(http.StatusOK, users)
 }
 
+// CreateUser godoc
+// @Summary      Create a user
+// @Description  create user with json
+// @Tags         user
+// @Accept       json
+// @Produce      json
+// @Param        user  body     models.User  true  "Create user"
+// @Success      200  {object}  models.User
+// @Failure      400  {object}  httputil.HttpError
+// @Router       /user [post]
 func CreateUser(c *gin.Context) {
 	user := models.User{}
 	if err := c.ShouldBind(&user); err != nil {
@@ -58,6 +87,17 @@ func CreateUser(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
+// UpdateUser godoc
+// @Summary      Update a user
+// @Description  update user with json
+// @Tags         user
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "User ID"
+// @Param        user  body     models.UpdateUser  true  "Update user"
+// @Success      200  {string}  models.User
+// @Failure      400  {object}  httputil.HttpError
+// @Router       /user/{id} [put]
 func UpdateUser(c *gin.Context) {
 	id := c.Param("id")
 	body := models.UpdateUser{}
@@ -85,6 +125,17 @@ func UpdateUser(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{})
 }
 
+// DeleteUser godoc
+// @Summary      Delete a user
+// @Description  delete user with id
+// @Tags         user
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "User ID"
+// @Success      200  {string}  models.User
+// @Failure      400  {object}  httputil.HttpError
+// @Failure      404  {object}  httputil.HttpError
+// @Router       /user/{id} [delete]
 func DeleteUser(c *gin.Context) {
 	id := c.Param("id")
 	res, err := config.Database.Exec(`DELETE FROM "user" WHERE id = $1`, id)
